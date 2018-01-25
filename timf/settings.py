@@ -84,6 +84,9 @@ DATABASES = {
         'NAME': 'newsstand',
         'ENGINE': 'django.db.backends.mysql',
         'HOST': 'newswire.theunderminejournal.com',
+        "OPTIONS": {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
 
