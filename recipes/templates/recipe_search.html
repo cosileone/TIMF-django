@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %}Recipe Search{% endblock title %}
+
+{% block body %}
+{% raw %}
+<div id="app" class="ui fluid centered container" v-cloak>
+    <h1 id="title" style="text-align: center;">Time is Money, Friend!</h1>
+
+    <div class="ui stackable grid">
+        <div id="search" class="centered row">
+            <div class="twelve wide column">
+                <!-- Search Box -->
+                <form class="ui form" @submit.prevent="submitSearch" autocomplete="off" style="width: 100%;">
+                    <div class="field">
+                        <label></label>
+                        <div class="two fields" style="justify-content: center">
+                            <div class="six wide field">
+                                <div id="server-select" class="ui search selection dropdown" tabindex="2">
+                                    <input type="hidden" name="country" v-model="selectedRealm">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Choose your Realm</div>
+                                    <div class="menu">
+                                        <div class="item" v-for="server in realmList" :data-value="server.slug" :data-region="server.region" :value="server">
+                                            <i :class="server.region.toLowerCase()+' flag'"></i>
+                                            {{ server.name }} ({{ server.region }})
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ten wide field">
+                                <div class="ui action input">
+                                    <input name="name" v-model="searchQuery"
+                                           :class="{'red': errors.has('name')}"
+                                           placeholder='Search for anything (i.e. "Obliterum" or 124125)' tabindex="1" autofocus>
+                                    <button id="submitButton" class="ui icon primary button">
+                                        <i class="search icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--<span v-show="errors.has('name')" class="ui red">{{ errors.first('name') }}</span>-->
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <!-- Spacer -->
+            <div class="tablet only computer only two wide column"></div>
+            <!-- Shopping Cart -->
+            <div class="six wide column">
+                <table v-show="shoppingCart.length" class="ui very compact unstackable table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <span>Shopping List</span> <small>(select a server to shop)</small>
+                            </th>
+                            <th></th>
+                            <th class="right aligned">
+                                <i class="shopping basket icon"></i>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="shopping-row" v-for="item in shoppingCart">
+                            <td>
+                                <a :href="'http://www.wowhead.com/item='+item.id" target="_blank">{{ item.name_enus }}</a>
+                            </td>
+                            <td class="center aligned">
+                                <div style="display: inline-block">
+                                    <i class="red trash outline link icon" @click="removeFromCart(item)"></i>
+                                </div>
+                                <div style="display: inline-block">
+                                    <div :id="'item-'+item.id" class="ui mini centered inline loader"></div>
+                                </div>
+                            </td>
+                            <td>
+                                <div v-if="item.auction_data" style="display: inline-block;">
+                                    <span v-if="item.auction_data.cheapest_buyout">
+                                        {{ item.auction_data.cheapest_buyout }}g
+                                    </span>
+                                    <span v-else>
+                                        {{ item.auction_data.cheapest_bid }}g
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot v-show="selectedRealm">
+                        <tr>
+                            <th colspan="3" class="no-padding">
+                                <div id="fetch-prices" class="ui small teal icon button" @click="shopAll()">
+                                    <i class="dollar icon"></i>
+                                    Fetch Prices
+                                </div>
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <!-- Search Results -->
+            <div class="six wide column">
+                <table v-show="results.length" id="results" class="ui very compact selectable unstackable table">
+                    <tbody>
+                        <tr v-for="item in results" class="item" @click="togglePin(item)">
+                            <td>
+                                <div><a :href="'http://www.wowhead.com/item='+item.id" target="_blank">{{ item.name_enus }}</a></div>
+                            </td>
+                            <td class="right aligned">
+                                <i v-show="inCart(item)" class="red pin icon"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endraw %}
+{% endblock body %}
+
+{% block javascript %}
+<script>
+    Vue.use(VeeValidate);
+
+    var app = new Vue({
+        el: '#app',
+        components: {},
+        computed: {},
+        data: {
+            selectedRealm: null,
+            selectedRegion: null,
+            searchQuery: null,
+            realmList: [],
+            results: [],
+            searchHistory: [],
+            shoppingCart: [],
+        },
+        created: function () {
+            this.getServerList();
+        },
+        updated: function () {
+            if (this.results.length) {
+                this.refreshIcons();
+            }
+        },
+        methods: {
+            getServerList: function () {
+                let vm = this;
+                $.ajax({
+                    url: '/api/realms',
+                    type: 'get'
+                }).always(function (response) {
+                    const list = response['realms'];
+                    for (let i = 0; i < list.length; i++) {
+                        vm.realmList.push(list[i]);
+                    }
+                });
+            },
+            findByAttr: function (array, attr, value) {
+                for (var i = 0; i < array.length; i += 1) {
+                    if (array[i][attr] === value) {
+                        return array[i];
+                    }
+                }
+                return null;
+            },
+            submitSearch: function () {
+                let url = '/api/recipe/';
+                let vm = this;
+                vm.results = [];
+
+                if (this.searchQuery) {
+                    $('#submitButton').addClass('loading');
+
+                    let is_number = Number.isInteger(Number.parseInt(this.searchQuery));
+                    if (is_number) {
+                        url += 's/' + this.searchQuery;
+                    } else {
+                        url += '/?name=' + this.searchQuery;
+                    }
+
+                    $.ajax({
+                        url: url,
+                        type: 'get'
+                    }).done(function (response) {
+                        if (is_number) {
+                            vm.results.push(response);
+                        } else {
+                            for (let i of response.items)
+                            vm.results.push(i)
+                        }
+                    }).always(function(){
+                        $('#submitButton').removeClass('loading');
+                    });
+                } else {
+                    return
+                }
+            },
+            auctionData: function (item) {
+                if (this.selectedRealm && this.selectedRegion) {
+                    $('#item-'+item.id).addClass('active');
+                    let url = '/api/items/'+item.id+'?realm='+this.selectedRealm+'&region='+this.selectedRegion;
+
+                    let request = $.ajax({
+                        url: url,
+                        type: 'get'
+                    }).done(function (response) {
+                        Vue.set(item, 'auction_data', response.auction_data);
+                    }).fail(function (xhr, status, message) {
+                        console.log(message);
+                    }).always(function () {
+                        $('#item-'+item.id).removeClass('active');
+                    });
+
+                    return request
+                }
+            },
+            inCart: function(item) {
+                for (let i = 0; i < this.shoppingCart.length; i++) {
+                    if (this.shoppingCart[i] === item) {
+                        return true
+                    }
+                }
+                return false
+            },
+            addToCart: function(item) {
+                if (!this.inCart(item)) {
+                    this.shoppingCart.push(item);
+                }
+            },
+            removeFromCart: function(item) {
+                var index = this.shoppingCart.indexOf(item);
+                this.shoppingCart.splice(index, 1);
+            },
+            togglePin: function (item) {
+                if (this.inCart(item)) {
+                    this.removeFromCart(item);
+                } else {
+                    this.addToCart(item);
+                }
+            },
+            refreshIcons: _.debounce(function(){
+                $WowheadPower.refreshLinks();
+            }, 100),
+            shopAll: function() {
+                $('#fetch-prices').addClass('loading');
+
+                let promises = this.shoppingCart.map(this.auctionData);
+
+                $.when.apply(null, promises).always(function() {
+                    $('#fetch-prices').removeClass('loading');
+                });
+            },
+        },
+    });
+
+    $('#server-select').dropdown({
+        allowTab: false,
+        forceSelection: false,
+        duration: 100,
+        onChange: function(text, value, $selectedItem) {
+            app.selectedRealm = $selectedItem.data('value');
+            app.selectedRegion = $selectedItem.data('region');
+        }
+    });
+
+</script>
+{% endblock javascript %}

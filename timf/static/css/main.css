@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css?family=Dosis');
+@font-face {
+    font-family: 'geometr231_btroman';
+    src: url('../fonts/geo-webfont.woff2') format('woff2'),
+         url('../fonts/geo-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+/* ---- Begin Styles ---- */
+[v-cloak] > * { display:none }
+
+body {
+    background-color: #EFEFEF;
+}
+
+#title {
+    color: #00a400;
+    font-family: "geometr231_btroman", "Helvetica Neue", Arial, sans-serif;
+    font-size: 72px;
+    text-shadow: 0px 1px 0 rgba(0,0,0,0.33);
+}
+
+#search > div {
+    padding-bottom: 0 !important;
+}
+
+tr.item > td {
+    height: 39px;
+}
+
+tr.shopping-row:hover .trash.icon {
+    visibility: visible;
+}
+
+tr.shopping-row:hover .inline.loader {
+    visibility: hidden;
+}
+
+.trash.icon {
+    visibility: hidden;
+}
+
+.no-padding {
+    padding: 0 !important;
+}
+
+#fetch-prices {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    padding: 7px 0;
+    width: 100%;
+}
+
+/* ---- Mobile Media Queries ---- */
+@media only screen and (min-device-width: 320px) and (max-device-width: 768px) and (orientation : portrait) {
+/* Styles */
+    #title {
+        font-size: 41px;
+    }
+}

@@ -15,8 +15,12 @@ Including another URLconf
 """
 from django.urls import include, path
 from django.contrib import admin
+from django.views.generic import TemplateView
+
+from . import views
 
 urlpatterns = [
     path('items/', include('items.urls')),
     path('admin/', admin.site.urls),
+    path('', views.index, name='index'),
 ]
