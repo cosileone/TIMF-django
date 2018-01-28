@@ -4,7 +4,7 @@ from items.api.serializers import SimpleItemSerializer, ItemSerializer
 from ..models import Item
 
 
-class ItemViewSet(viewsets.ModelViewSet):
+class ItemViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API view for the Item model
     """

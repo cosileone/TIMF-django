@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'timf.apps.TimfConfig',
     'items.apps.ItemsConfig',
+    'realms',
 ]
 
 MIDDLEWARE = [
@@ -95,7 +96,7 @@ DATABASES = {
 }
 
 # Database Routers
-DATABASE_ROUTERS = ['items.routers.ItemRouter', ]
+DATABASE_ROUTERS = ['items.routers.ItemRouter', 'realms.routers.RealmRouter']
 
 
 # Password validation

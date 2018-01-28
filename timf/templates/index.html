@@ -150,7 +150,7 @@
                     url: '/api/realms/',
                     type: 'get'
                 }).always(function (response) {
-                    const list = response['realms'];
+                    const list = response.results;
                     for (let i = 0; i < list.length; i++) {
                         vm.realmList.push(list[i]);
                     }
