@@ -63,7 +63,7 @@
                     <tbody>
                         <tr class="shopping-row" v-for="item in shoppingCart" :key="item.id">
                             <td>
-                                <a :href="'http://www.wowhead.com/item='+item.id" target="_blank">{{ item.name_enus }}</a>
+                                <a :href="'http://www.wowhead.com/item='+item.id" target="_blank">{{ item.name }}</a>
                             </td>
                             <td class="center aligned">
                                 <div style="display: inline-block">
@@ -103,7 +103,7 @@
                     <tbody>
                         <tr v-for="item in results" :key="item.id" class="item" @click="togglePin(item)">
                             <td>
-                                <div><a :href="'http://www.wowhead.com/item='+item.id" target="_blank">{{ item.name_enus }}</a></div>
+                                <div><a :href="'http://www.wowhead.com/item='+item.id" target="_blank">{{ item.name }}</a></div>
                             </td>
                             <td class="right aligned">
                                 <i v-show="inCart(item)" class="red pin icon"></i>
@@ -147,7 +147,7 @@
             getServerList: function () {
                 let vm = this;
                 $.ajax({
-                    url: '/api/realms',
+                    url: '/api/realms/',
                     type: 'get'
                 }).always(function (response) {
                     const list = response['realms'];
@@ -165,7 +165,7 @@
                 return null;
             },
             submitSearch: function () {
-                let url = '/api/item';
+                let url = '/api/items/';
                 let vm = this;
 
                 if (this.searchQuery) {
@@ -173,9 +173,9 @@
 
                     let is_number = Number.isInteger(Number.parseInt(this.searchQuery));
                     if (is_number) {
-                        url += 's/' + this.searchQuery;
+                        url += this.searchQuery + "/";
                     } else {
-                        url += '/?name=' + this.searchQuery;
+                        url += '?name=' + this.searchQuery;
                     }
 
                     $.ajax({
@@ -186,8 +186,9 @@
                         if (is_number) {
                             vm.results.push(response);
                         } else {
-                            for (let i of response.items)
-                            vm.results.push(i)
+                            for (let i of response.results) {
+                                vm.results.push(i)
+                            }
                         }
                     }).fail(function (response) {
                         Vue.set(vm.errors, 'query', response.responseJSON['error']);

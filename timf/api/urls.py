@@ -3,7 +3,7 @@ from rest_framework import routers
 from items.api import views
 
 router = routers.SimpleRouter()
-router.register(r'items', views.ItemViewSet)
+router.register(r'items', views.ItemViewSet, 'items')
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

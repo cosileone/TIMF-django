@@ -27,6 +27,9 @@ class Item(models.Model):
         default=None
     )
 
+    buyfromvendor = models.IntegerField()
+    selltovendor = models.IntegerField()
+
     auctionable = models.SmallIntegerField(
         null=True,
         default=None
@@ -48,7 +51,7 @@ class Item(models.Model):
     )
 
     objects = ItemManager()
-    all = objects
 
     class Meta:
         db_table = 'tblDBCItem'
+        ordering = ['id']
