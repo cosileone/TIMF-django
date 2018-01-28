@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'rest_framework',
     'timf.apps.TimfConfig',
     'items.apps.ItemsConfig',
 ]
@@ -135,3 +136,12 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'static/'))
 STATIC_URL = '/static/'
+
+# Django Rest Framework
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
