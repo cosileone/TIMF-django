@@ -6,7 +6,7 @@ from ..models import Item
 
 class ItemViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    API view for the Item model
+    Read-Only API view for the Item model
     """
     serializer_class = SimpleItemSerializer
 

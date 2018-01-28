@@ -39,9 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'rest_framework',
-    'timf.apps.TimfConfig',
-    'items.apps.ItemsConfig',
+    'timf',
+    'items',
     'realms',
+    'recipes',
 ]
 
 MIDDLEWARE = [
@@ -96,7 +97,11 @@ DATABASES = {
 }
 
 # Database Routers
-DATABASE_ROUTERS = ['items.routers.ItemRouter', 'realms.routers.RealmRouter']
+DATABASE_ROUTERS = [
+    'items.routers.ItemRouter',
+    'realms.routers.RealmRouter',
+    'recipes.routers.RecipeRouter',
+]
 
 
 # Password validation
