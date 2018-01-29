@@ -33,7 +33,7 @@ class Recipe(models.Model):
         on_delete=models.PROTECT,
     )
 
-    ingredients = models.ManyToManyField(
+    reagents = models.ManyToManyField(
         'items.Item',
         through='Ingredient',
         through_fields=('spell', 'reagent'),

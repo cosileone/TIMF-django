@@ -8,6 +8,5 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """
     API view for the Recipe model
     """
-
     serializer_class = RecipeSerializer
-    queryset = Recipe.objects.all()
+    queryset = Recipe.objects.exclude(skillline__isnull=True)
