@@ -5,6 +5,8 @@ chardet==3.0.4
 curtsies==0.2.11
 Django==2.0.1
 django-extensions==1.9.9
+django-filter==1.1.0
+djangorestframework==3.7.7
 greenlet==0.4.12
 idna==2.6
 mysqlclient==1.3.12
