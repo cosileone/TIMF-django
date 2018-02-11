@@ -6,6 +6,6 @@ from .models import Item
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
     list_display = ('name', 'id')
-
+    search_fields = ['name', 'id']
     ordering = ['id']
 

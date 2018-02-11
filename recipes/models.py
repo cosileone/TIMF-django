@@ -10,6 +10,7 @@ class Recipe(models.Model):
     )
 
     description = models.CharField(
+        verbose_name='Spell Description',
         max_length=512
     )
 
@@ -32,7 +33,7 @@ class Recipe(models.Model):
     crafteditem = models.ForeignKey(
         'items.Item',
         related_name='crafting_recipe',
-        verbose_name='Crafting Recipe',
+        verbose_name='Crafted Item',
         db_column='crafteditem',
         on_delete=models.PROTECT,
     )
@@ -52,9 +53,15 @@ class Recipe(models.Model):
 
     objects = RecipeQuerySet.as_manager()
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         db_table = 'tblDBCSpell'
         ordering = ['id']
+
+    def save(self, *args, **kwargs):
+        ingredient = Ingredient.objects.create(item=self.crafteditem, spell=self)
 
 
 class Ingredient(models.Model):
@@ -62,7 +69,8 @@ class Ingredient(models.Model):
         'items.Item',
         on_delete=models.PROTECT,
         db_column='item',
-        related_name='reagent_for'
+        related_name='reagent_for',
+        verbose_name='Item Made'
     )
     skillline = models.PositiveSmallIntegerField()
     reagent = models.ForeignKey(
@@ -75,8 +83,12 @@ class Ingredient(models.Model):
         'Recipe',
         on_delete=models.PROTECT,
         db_column='spell',
-        blank=True, null=True
+        primary_key=True,
+        unique=False
     )
 
     class Meta:
+        managed = False
         db_table = 'tblDBCItemReagents'
+        ordering = ['spell']
+        unique_together = [('reagent', 'spell')]
