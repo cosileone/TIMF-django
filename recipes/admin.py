@@ -9,7 +9,7 @@ class ReagentInline(admin.TabularInline):
     readonly_fields = ['reagent', 'quantity']
     exclude = ['skillline', 'item']
     model = Ingredient
-    extra = 10
+    extra = 1
 
 
 # Register your models here.
@@ -47,7 +47,7 @@ class IngredientAdmin(admin.ModelAdmin):
             reverse('admin:items_item_change', args=(obj.item.pk,)),
             obj.item
         ))
-    item_link.short_description = 'Item'
+    item_link.short_description = 'Item Crafted'
 
     def reagent_link(self, obj):
         return mark_safe('<a href="{0}">{1}</a>'.format(

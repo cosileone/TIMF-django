@@ -87,6 +87,9 @@ class Ingredient(models.Model):
         unique=False
     )
 
+    def __str__(self):
+        return self.reagent.name
+
     class Meta:
         managed = False
         db_table = 'tblDBCItemReagents'
