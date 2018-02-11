@@ -27,8 +27,16 @@ class Item(models.Model):
         default=None
     )
 
-    buyfromvendor = models.IntegerField()
-    selltovendor = models.IntegerField()
+    buyfromvendor = models.IntegerField(
+        blank=True,
+        null=True,
+        default=None
+    )
+    selltovendor = models.IntegerField(
+        blank=True,
+        null=True,
+        default=None
+    )
 
     auctionable = models.SmallIntegerField(
         null=True,

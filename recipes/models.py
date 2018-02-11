@@ -17,7 +17,11 @@ class Recipe(models.Model):
         default=0
     )
 
-    skillline = models.SmallIntegerField()
+    skillline = models.SmallIntegerField(
+        blank=True,
+        null=True,
+        default=None
+    )
 
     qtymade = models.DecimalField(
         max_digits=7,
@@ -40,7 +44,11 @@ class Recipe(models.Model):
         related_name='recipes',
     )
 
-    expansion = models.PositiveSmallIntegerField()
+    expansion = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True,
+        default=None
+    )
 
     objects = RecipeQuerySet.as_manager()
 
