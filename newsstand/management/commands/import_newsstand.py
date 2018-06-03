@@ -1,8 +1,9 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
+from newsstand.models import Tbldbcitem, Tblrealm
 from items.models import Item
-from newsstand.models import Tbldbcitem
+from realms.models import Realm
 
 
 class Command(BaseCommand):
@@ -20,6 +21,36 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         dry_run = options.get('dry-run')
 
+        self.stdout.write("Copying Items...")
+        self.get_items(dry_run)
+
+        self.stdout.write("Copying Realms...")
+        self.get_realms(dry_run)
+
+    def get_realms(self, dry_run):
+        supported_regions = ['US', 'EU']
+        local_data = list(
+            Realm.objects.filter(
+                region__in=supported_regions
+            ).values_list(
+                'slug',
+                flat=True
+            )
+        )
+        newsstand_data = Tblrealm.objects.filter(region__in=supported_regions).exclude(slug__in=local_data)
+
+        if newsstand_data != local_data:
+            with transaction.atomic():
+                for realm in newsstand_data:
+                    new_realm = Realm()
+                    new_realm.name = realm.name
+                    new_realm.region = realm.region
+                    new_realm.slug = realm.slug
+                    new_realm.house = realm.house
+                    new_realm.population = realm.population
+                    new_realm.save()
+
+    def get_items(self, dry_run):
         local_items = list(
             Item.objects.exclude(
                 blizzard_id__isnull=True

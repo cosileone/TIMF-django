@@ -6,10 +6,10 @@ from ..models import Item
 class SimpleItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ('id', 'name')
+        fields = ('id', 'blizzard_id', 'name')
 
 
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ('id', 'name', 'selltovendor')
+        fields = ('id', 'blizzard_id', 'name', 'selltovendor')

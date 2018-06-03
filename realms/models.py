@@ -24,8 +24,8 @@ class Realm(models.Model):
         max_length=100
     )
 
-    house = models.SmallIntegerField()
-    population = models.IntegerField()
+    house = models.PositiveSmallIntegerField(blank=True, null=True)
+    population = models.PositiveIntegerField(blank=True, null=True)
 
     class Meta:
         ordering = ['id']
