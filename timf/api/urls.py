@@ -4,7 +4,7 @@ from items.api.views import ItemViewSet
 from realms.api.views import RealmViewSet
 from recipes.api.views import RecipeViewSet
 
-router = routers.SimpleRouter()
+router = routers.SimpleRouter(trailing_slash=False)
 router.register(r'items', ItemViewSet, 'items')
 router.register(r'realms', RealmViewSet, 'realms')
 router.register(r'recipes', RecipeViewSet, 'recipes')
