@@ -9,6 +9,7 @@ class ItemViewSet(viewsets.ReadOnlyModelViewSet):
     Read-Only API view for the Item model
     """
     serializer_class = SimpleItemSerializer
+    lookup_field = 'blizzard_id'
 
     def get_serializer_context(self):
         return {'realm': self.request.query_params.get('realm', None)}
@@ -26,7 +27,7 @@ class ItemViewSet(viewsets.ReadOnlyModelViewSet):
         return serializer_class(*args, **kwargs)
 
     def get_queryset(self):
-        queryset = Item.objects.all()
+        queryset = Item.objects.filter(auctionable=True)
         name = self.request.query_params.get('name', None)
 
         if name is not None:
