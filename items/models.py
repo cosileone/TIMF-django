@@ -5,6 +5,11 @@ from .managers import ItemManager
 
 # Create your models here.
 class Item(models.Model):
+    blizzard_id = models.IntegerField(
+        null=True,
+        default=None
+    )
+
     name = models.CharField(
         max_length=250,
         db_column='name_enus'
@@ -58,11 +63,8 @@ class Item(models.Model):
         default=None
     )
 
-    objects = ItemManager()
-
     def __str__(self):
         return self.name
 
     class Meta:
-        db_table = 'tblDBCItem'
         ordering = ['id']

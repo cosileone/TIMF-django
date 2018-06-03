@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'items',
     'realms',
     'recipes',
+    'newsstand',
 ]
 
 MIDDLEWARE = [
@@ -98,9 +99,7 @@ DATABASES = {
 
 # Database Routers
 DATABASE_ROUTERS = [
-    'items.routers.ItemRouter',
-    'realms.routers.RealmRouter',
-    'recipes.routers.RecipeRouter',
+    'newsstand.routers.TbldbcitemRouter',
 ]
 
 
