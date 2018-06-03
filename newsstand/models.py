@@ -60,7 +60,8 @@ class Tbldbcitem(models.Model):
     id = models.PositiveIntegerField(primary_key=True)
     name = models.CharField(
         max_length=250,
-        db_column='name_enus'
+        db_column='name_enus',
+        default=''
     )
     name_dede = models.CharField(max_length=250, blank=True, null=True)
     name_eses = models.CharField(max_length=250, blank=True, null=True)
@@ -85,6 +86,7 @@ class Tbldbcitem(models.Model):
     flags = models.CharField(max_length=22)
 
     class Meta:
+        managed = False
         db_table = 'tblDBCItem'
 
 

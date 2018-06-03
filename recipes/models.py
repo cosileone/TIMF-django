@@ -1,7 +1,5 @@
 from django.db import models
 
-from .managers import RecipeQuerySet
-
 
 # Create your models here.
 class Recipe(models.Model):
@@ -51,13 +49,10 @@ class Recipe(models.Model):
         default=None
     )
 
-    objects = RecipeQuerySet.as_manager()
-
     def __str__(self):
         return self.name
 
     class Meta:
-        db_table = 'tblDBCSpell'
         ordering = ['id']
 
     def save(self, *args, **kwargs):
@@ -92,6 +87,5 @@ class Ingredient(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'tblDBCItemReagents'
         ordering = ['spell']
         unique_together = [('reagent', 'spell')]

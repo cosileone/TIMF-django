@@ -28,5 +28,4 @@ class Realm(models.Model):
     population = models.IntegerField()
 
     class Meta:
-        db_table = 'tblRealm'
         ordering = ['id']
