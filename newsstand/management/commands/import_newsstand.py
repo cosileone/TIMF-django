@@ -19,6 +19,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        # TODO: Handle option to force update existing items as well
         dry_run = options.get('dry-run')
 
         self.stdout.write("Copying Items...")
@@ -39,7 +40,7 @@ class Command(BaseCommand):
         )
         newsstand_data = Tblrealm.objects.filter(region__in=supported_regions).exclude(slug__in=local_data)
 
-        if newsstand_data != local_data:
+        if newsstand_data != local_data and not dry_run:
             with transaction.atomic():
                 for realm in newsstand_data:
                     new_realm = Realm()
@@ -49,6 +50,8 @@ class Command(BaseCommand):
                     new_realm.house = realm.house
                     new_realm.population = realm.population
                     new_realm.save()
+        else:
+            self.stdout.write("Number of new items: {}".format(newsstand_data.count()))
 
     def get_items(self, dry_run):
         local_items = list(
@@ -59,28 +62,27 @@ class Command(BaseCommand):
                 flat=True
             ).using('default'))
 
-        if local_items:
-            new_items = Tbldbcitem.objects.exclude(pk__in=local_items).using('newsstand')
-            count = new_items.count()
+        new_items = Tbldbcitem.objects.exclude(pk__in=local_items).using('newsstand')
+        count = new_items.count()
 
-            with transaction.atomic():
-                if count > 0 and not dry_run:
-                    for item in new_items:
-                        new_item = Item()
-                        new_item.blizzard_id = item.id
-                        new_item.name = item.name
-                        new_item.quality = item.quality
-                        new_item.level = item.level
-                        new_item.item_class = item.class_field
-                        new_item.subclass = item.subclass
-                        new_item.icon = item.icon
-                        new_item.stacksize = item.stacksize
-                        new_item.buyfromvendor = item.buyfromvendor
-                        new_item.selltovendor = item.selltovendor
-                        new_item.auctionable = item.auctionable
-                        new_item.type = item.type
-                        new_item.requiredlevel = item.requiredlevel
-                        new_item.requiredskill = item.requiredskill
-                        new_item.save()
-                else:
-                    self.stdout.write("Number of new items: {}".format(count))
+        with transaction.atomic():
+            if count > 0 and not dry_run:
+                for item in new_items:
+                    new_item = Item()
+                    new_item.blizzard_id = item.id
+                    new_item.name = item.name
+                    new_item.quality = item.quality
+                    new_item.level = item.level
+                    new_item.item_class = item.class_field
+                    new_item.subclass = item.subclass
+                    new_item.icon = item.icon
+                    new_item.stacksize = item.stacksize
+                    new_item.buyfromvendor = item.buyfromvendor
+                    new_item.selltovendor = item.selltovendor
+                    new_item.auctionable = item.auctionable
+                    new_item.type = item.type
+                    new_item.requiredlevel = item.requiredlevel
+                    new_item.requiredskill = item.requiredskill
+                    new_item.save()
+            else:
+                self.stdout.write("Number of new items: {}".format(count))
