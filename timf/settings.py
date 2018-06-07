@@ -25,7 +25,7 @@ SECRET_KEY = 'c$o5p_fca&@l(xb@bp(4&iwhyy78d6+4-39p46hma%nscrhbp-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['timf.cosileone.com', '127.0.0.1']
 
 
 # Application definition
@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'realms',
     'recipes',
     'newsstand',
+    'auctionhouse',
+    'wowapi'
 ]
 
 MIDDLEWARE = [

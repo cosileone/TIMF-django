@@ -67,19 +67,19 @@ class Ingredient(models.Model):
         related_name='reagent_for',
         verbose_name='Item Made'
     )
+
     skillline = models.PositiveSmallIntegerField()
+
     reagent = models.ForeignKey(
         'items.Item',
         on_delete=models.PROTECT,
         db_column='reagent'
     )
     quantity = models.DecimalField(max_digits=8, decimal_places=4)
+
     spell = models.ForeignKey(
         'Recipe',
-        on_delete=models.PROTECT,
-        db_column='spell',
-        primary_key=True,
-        unique=False
+        on_delete=models.PROTECT
     )
 
     def __str__(self):
