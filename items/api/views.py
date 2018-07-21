@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 
 from items.api.serializers import SimpleItemSerializer, ItemSerializer
 from ..models import Item
@@ -10,6 +10,8 @@ class ItemViewSet(viewsets.ReadOnlyModelViewSet):
     """
     serializer_class = SimpleItemSerializer
     lookup_field = 'blizzard_id'
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
     def get_serializer_context(self):
         return {'realm': self.request.query_params.get('realm', None)}
@@ -28,9 +30,5 @@ class ItemViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         queryset = Item.objects.filter(auctionable=True)
-        name = self.request.query_params.get('name', None)
-
-        if name is not None:
-            queryset = queryset.filter(name__icontains=name)
 
         return queryset
