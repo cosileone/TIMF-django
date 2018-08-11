@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from newsstand.models import Tbldbcitem, Tblrealm
+from newsstand.models import Tbldbcitem, Tblrealm, Tblhousecheck
+from auctionhouses.models import AuctionHouse
 from items.models import Item
 from realms.models import Realm
 
@@ -28,7 +29,10 @@ class Command(BaseCommand):
         self.stdout.write("Copying Realms...")
         self.get_realms(dry_run)
 
-    def get_realms(self, dry_run):
+        self.stdout.write("Copying Auction House Checks...")
+        self.get_auctionhouse_checks(dry_run)
+
+    def get_realms(self, dry_run=True):
         supported_regions = ['US', 'EU']
         local_data = list(
             Realm.objects.filter(
@@ -53,7 +57,7 @@ class Command(BaseCommand):
         else:
             self.stdout.write("Number of new items: {}".format(newsstand_data.count()))
 
-    def get_items(self, dry_run):
+    def get_items(self, dry_run=True):
         local_items = list(
             Item.objects.exclude(
                 blizzard_id__isnull=True
@@ -86,3 +90,24 @@ class Command(BaseCommand):
                     new_item.save()
             else:
                 self.stdout.write("Number of new items: {}".format(count))
+
+    def get_auctionhouse_checks(self, dry_run=True):
+        house_checks = Tblhousecheck.objects.all()
+        count = house_checks.count()
+
+        with transaction.atomic():
+            if not dry_run:
+                for row in house_checks:
+                    new_data, created = AuctionHouse.objects.update_or_create(house=row.house, defaults={
+                        'house': row.house,
+                        'nextcheck': row.nextcheck,
+                        'lastdaily': row.lastdaily,
+                        'lastcheck': row.lastcheck,
+                        'lastcheckresult': row.lastcheckresult,
+                        'lastchecksuccess': row.lastchecksuccess,
+                        'lastchecksuccessresult': row.lastchecksuccessresult,
+                    })
+            else:
+                self.stdout.write("Number of new auctionhouse checks: {}".format(count))
+
+

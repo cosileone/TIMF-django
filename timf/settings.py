@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'realms',
     'recipes',
     'newsstand',
-    'auctionhouse',
+    'auctionhouses',
     'wowapi'
 ]
 
