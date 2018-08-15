@@ -24,6 +24,7 @@ SECRET_KEY = 'c$o5p_fca&@l(xb@bp(4&iwhyy78d6+4-39p46hma%nscrhbp-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+DJANGO_TOOLBAR = False
 
 ALLOWED_HOSTS = ['timf.cosileone.com', '127.0.0.1']
 
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'django_toolbar',
     'rest_framework',
     'timf',
     'items',
