@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from newsstand.models import Tbldbcitem, Tblrealm, Tblhousecheck
-from auctionhouses.models import AuctionHouse
+from auctionhouses.models import AuctionData
 from items.models import Item
 from realms.models import Realm
 
@@ -44,7 +44,7 @@ class Command(BaseCommand):
         )
         newsstand_data = Tblrealm.objects.filter(region__in=supported_regions).exclude(slug__in=local_data)
 
-        if newsstand_data != local_data and not dry_run:
+        if not dry_run:
             with transaction.atomic():
                 for realm in newsstand_data:
                     new_realm = Realm()
@@ -72,21 +72,25 @@ class Command(BaseCommand):
         with transaction.atomic():
             if count > 0 and not dry_run:
                 for item in new_items:
-                    new_item = Item()
-                    new_item.blizzard_id = item.id
-                    new_item.name = item.name
-                    new_item.quality = item.quality
-                    new_item.level = item.level
-                    new_item.item_class = item.class_field
-                    new_item.subclass = item.subclass
-                    new_item.icon = item.icon
-                    new_item.stacksize = item.stacksize
-                    new_item.buyfromvendor = item.buyfromvendor
-                    new_item.selltovendor = item.selltovendor
-                    new_item.auctionable = item.auctionable
-                    new_item.type = item.type
-                    new_item.requiredlevel = item.requiredlevel
-                    new_item.requiredskill = item.requiredskill
+                    new_item, created = Item.objects.update_or_create(
+                        blizzard_id=item.pk,
+                        defaults={
+                            "blizzard_id": item.id,
+                            "name": item.name,
+                            "quality": item.quality,
+                            "level": item.level,
+                            "item_class": item.class_field,
+                            "subclass": item.subclass,
+                            "icon": item.icon,
+                            "stacksize": item.stacksize,
+                            "buyfromvendor": item.buyfromvendor,
+                            "selltovendor": item.selltovendor,
+                            "auctionable": item.auctionable,
+                            "type": item.type,
+                            "requiredlevel": item.requiredlevel,
+                            "requiredskill": item.requiredskill
+                        }
+                    )
                     new_item.save()
             else:
                 self.stdout.write("Number of new items: {}".format(count))
@@ -98,7 +102,7 @@ class Command(BaseCommand):
         with transaction.atomic():
             if not dry_run:
                 for row in house_checks:
-                    new_data, created = AuctionHouse.objects.update_or_create(house=row.house, defaults={
+                    new_data, created = AuctionData.objects.update_or_create(house=row.house, defaults={
                         'house': row.house,
                         'nextcheck': row.nextcheck,
                         'lastdaily': row.lastdaily,
