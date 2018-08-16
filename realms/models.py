@@ -1,5 +1,7 @@
 from django.db import models
 
+from .managers import RealmQuerySet
+
 
 # Create your models here.
 class Realm(models.Model):
@@ -27,5 +29,10 @@ class Realm(models.Model):
     house = models.PositiveSmallIntegerField(blank=True, null=True)
     population = models.PositiveIntegerField(blank=True, null=True)
 
+    objects = RealmQuerySet.as_manager()
+
     class Meta:
         ordering = ['id']
+
+    def __str__(self):
+        return '{} ({})'.format(self.slug, self.region)

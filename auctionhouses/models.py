@@ -1,5 +1,7 @@
 from django.db import models
 
+from .managers import AuctionQuerySet
+
 
 class Auction(models.Model):
     auc = models.PositiveIntegerField(primary_key=True)
@@ -17,6 +19,7 @@ class Auction(models.Model):
 
     ownerRealm = models.ForeignKey(
         'realms.Realm',
+        related_name='auctions',
         on_delete=models.PROTECT,
         help_text='The Realm on which this Auction is listed on.'
     )
@@ -44,6 +47,11 @@ class Auction(models.Model):
         max_length=256
     )
 
+    objects = AuctionQuerySet.as_manager()
+
+    def __str__(self):
+        return '{}x[{}] {}/{}'.format(self.quantity, self.item, self.bid, self.buyout)
+
 
 class AuctionData(models.Model):
     house = models.PositiveSmallIntegerField(primary_key=True)
@@ -56,7 +64,7 @@ class AuctionData(models.Model):
 
 
 # class AuctionHouse(models.Model):
-#     data = models.ForeignKey()
+#     realm = models.ForeignKey()
 #
 #     # @property
-#     # def lastest(self):
+#     # def latest(self):
