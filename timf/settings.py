@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    'django_toolbar',
+    'debug_toolbar',
     'rest_framework',
     'timf',
     'items',
@@ -58,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'timf.urls'
@@ -145,6 +146,9 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'static/'))
 STATIC_URL = '/static/'
+
+MEDIA_ROOT = os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'media/'))
+MEDIA_URL = '/media/'
 
 # Django Rest Framework
 REST_FRAMEWORK = {
