@@ -111,6 +111,9 @@ class Command(BaseCommand):
                         'lastchecksuccess': row.lastchecksuccess,
                         'lastchecksuccessresult': row.lastchecksuccessresult,
                     })
+                    new_data.save()
+                    with transaction.atomic():
+                        new_data.build_auctions()
             else:
                 self.stdout.write("Number of new auctionhouse checks: {}".format(count))
 
