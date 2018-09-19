@@ -1,3 +1,6 @@
+import json
+import time
+
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -34,26 +37,30 @@ class Command(BaseCommand):
 
     def get_realms(self, dry_run=True):
         supported_regions = ['US', 'EU']
-        local_data = list(
-            Realm.objects.filter(
-                region__in=supported_regions
-            ).values_list(
-                'slug',
-                flat=True
-            )
-        )
-        newsstand_data = Tblrealm.objects.filter(region__in=supported_regions).exclude(slug__in=local_data)
+        # local_data = list(
+        #     Realm.objects.filter(
+        #         region__in=supported_regions
+        #     ).values_list(
+        #         'slug',
+        #         flat=True
+        #     )
+        # )
+        newsstand_data = Tblrealm.objects.filter(region__in=supported_regions)#.exclude(slug__in=local_data)
 
         if not dry_run:
-            with transaction.atomic():
-                for realm in newsstand_data:
-                    new_realm = Realm()
-                    new_realm.name = realm.name
-                    new_realm.region = realm.region
-                    new_realm.slug = realm.slug
-                    new_realm.house = realm.house
-                    new_realm.population = realm.population
-                    new_realm.save()
+            for realm in newsstand_data:
+                new_realm, _ = Realm.objects.update_or_create(
+                    slug=realm.slug,
+                    region=realm.region,
+                    defaults={
+                        'slug': realm.slug,
+                        'name': realm.name,
+                        'region': realm.region,
+                        'house': realm.house,
+                        'population': realm.population
+                    }
+                )
+                new_realm.save()
         else:
             self.stdout.write("Number of new items: {}".format(newsstand_data.count()))
 
@@ -69,52 +76,58 @@ class Command(BaseCommand):
         new_items = Tbldbcitem.objects.exclude(pk__in=local_items).using('newsstand')
         count = new_items.count()
 
-        with transaction.atomic():
-            if count > 0 and not dry_run:
-                for item in new_items:
-                    new_item, created = Item.objects.update_or_create(
-                        blizzard_id=item.pk,
-                        defaults={
-                            "blizzard_id": item.id,
-                            "name": item.name,
-                            "quality": item.quality,
-                            "level": item.level,
-                            "item_class": item.class_field,
-                            "subclass": item.subclass,
-                            "icon": item.icon,
-                            "stacksize": item.stacksize,
-                            "buyfromvendor": item.buyfromvendor,
-                            "selltovendor": item.selltovendor,
-                            "auctionable": item.auctionable,
-                            "type": item.type,
-                            "requiredlevel": item.requiredlevel,
-                            "requiredskill": item.requiredskill
-                        }
-                    )
-                    new_item.save()
-            else:
-                self.stdout.write("Number of new items: {}".format(count))
+        if count > 0 and not dry_run:
+            for item in new_items:
+                new_item, created = Item.objects.update_or_create(
+                    blizzard_id=item.pk,
+                    defaults={
+                        "blizzard_id": item.id,
+                        "name": item.name,
+                        "quality": item.quality,
+                        "level": item.level,
+                        "item_class": item.class_field,
+                        "subclass": item.subclass,
+                        "icon": item.icon,
+                        "stacksize": item.stacksize,
+                        "buyfromvendor": item.buyfromvendor,
+                        "selltovendor": item.selltovendor,
+                        "auctionable": item.auctionable,
+                        "type": item.type,
+                        "requiredlevel": item.requiredlevel,
+                        "requiredskill": item.requiredskill
+                    }
+                )
+                new_item.save()
+        else:
+            self.stdout.write("Number of new items: {}".format(count))
+
+    def get_recipes(self, dry_run=True):
+        pass
 
     def get_auctionhouse_checks(self, dry_run=True):
         house_checks = Tblhousecheck.objects.all()
         count = house_checks.count()
 
-        with transaction.atomic():
-            if not dry_run:
-                for row in house_checks:
-                    new_data, created = AuctionData.objects.update_or_create(house=row.house, defaults={
-                        'house': row.house,
-                        'nextcheck': row.nextcheck,
-                        'lastdaily': row.lastdaily,
-                        'lastcheck': row.lastcheck,
-                        'lastcheckresult': row.lastcheckresult,
-                        'lastchecksuccess': row.lastchecksuccess,
-                        'lastchecksuccessresult': row.lastchecksuccessresult,
-                    })
-                    new_data.save()
-                    with transaction.atomic():
-                        new_data.build_auctions()
-            else:
-                self.stdout.write("Number of new auctionhouse checks: {}".format(count))
+        if not dry_run:
+            start = time.clock()
+            house = 0
+            for row in house_checks[101:102]:
+                house = row.house
+                new_data, created = AuctionData.objects.update_or_create(house=row.house, defaults={
+                    'house': row.house,
+                    'nextcheck': row.nextcheck,
+                    'lastdaily': row.lastdaily,
+                    'lastcheck': row.lastcheck,
+                    'lastcheckresult': row.lastcheckresult,
+                    'lastchecksuccess': row.lastchecksuccess,
+                    'lastchecksuccessresult': row.lastchecksuccessresult,
+                })
+                success_result = json.loads(new_data.lastchecksuccessresult)
+                region = 'US' if 'auction-api-us' in success_result['files'][0]['url'] else 'EU'
+                new_data.save()
+                new_data.build_auctions(region)
+            self.stdout.write("House {} auctions saved in {} seconds".format(house, time.clock()-start))
+        else:
+            self.stdout.write("Number of new auctionhouse checks: {}".format(count))
 
 
