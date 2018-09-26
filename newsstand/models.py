@@ -237,7 +237,6 @@ class Tbldbcspell(models.Model):
     cooldown = models.PositiveIntegerField()
     skillline = models.PositiveSmallIntegerField(blank=True, null=True)
     qtymade = models.DecimalField(max_digits=7, decimal_places=2)
-    yellow = models.PositiveSmallIntegerField(blank=True, null=True)
     crafteditem = models.PositiveIntegerField(blank=True, null=True)
     expansion = models.PositiveIntegerField(blank=True, null=True)
 

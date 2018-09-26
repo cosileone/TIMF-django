@@ -2,12 +2,13 @@ import json
 import time
 
 from django.core.management.base import BaseCommand
-from django.db import transaction
+from django.db import connections
 
-from newsstand.models import Tbldbcitem, Tblrealm, Tblhousecheck
+from newsstand.models import Tbldbcitem, Tblrealm, Tblhousecheck, Tbldbcspell, Tbldbcitemreagents
 from auctionhouses.models import AuctionData
 from items.models import Item
 from realms.models import Realm
+from recipes.models import Recipe, Ingredient
 
 
 class Command(BaseCommand):
@@ -31,6 +32,12 @@ class Command(BaseCommand):
 
         self.stdout.write("Copying Realms...")
         self.get_realms(dry_run)
+
+        # self.stdout.write("Copying Ingredients...")
+        # self.get_ingredients(dry_run)
+
+        self.stdout.write("Copying Recipes...")
+        self.get_recipes(dry_run)
 
         self.stdout.write("Copying Auction House Checks...")
         self.get_auctionhouse_checks(dry_run)
@@ -101,8 +108,64 @@ class Command(BaseCommand):
         else:
             self.stdout.write("Number of new items: {}".format(count))
 
+    def get_ingredients(self, dry_run=True):
+        with connections['newsstand'].cursor() as cursor:
+            cursor.execute('SELECT item, skillline, reagent, quantity, spell FROM newsstand.tblDBCItemReagents')
+            columns = [col[0] for col in cursor.description]
+            ingredients = [
+                dict(zip(columns, row))
+                for row in cursor.fetchall()
+            ]
+
+        if not dry_run:
+            for ingredient in ingredients:
+                item = Item.objects.get(blizzard_id=ingredient['item'])
+                reagent = Item.objects.get(blizzard_id=ingredient['reagent'])
+
+                if Ingredient.objects.filter(reagent=reagent, spell=ingredient['spell']).exists():
+                    new_ingredient = Ingredient.objects.get(
+                        reagent=reagent,
+                        spell=ingredient['spell']
+                    )
+                else:
+                    new_ingredient = Ingredient()
+
+                new_ingredient.item = item,
+                new_ingredient.skillline = ingredient['skillline'],
+                new_ingredient.reagent = reagent,
+                new_ingredient.quantity = ingredient['quantity']
+
+                new_ingredient.save()
+        else:
+            self.stdout.write("Number of ingredients: {}".format(ingredients.count()))
+
     def get_recipes(self, dry_run=True):
-        pass
+        spells = Tbldbcspell.objects.filter(skillline__isnull=False)
+
+        if not dry_run:
+            for spell in spells:
+                try:
+                    crafted_item = Item.objects.get(blizzard_id=spell.crafteditem)
+                except Item.DoesNotExist:
+                    print('{} not found'.format(spell.crafteditem))
+                    continue
+
+                new_spell, created = Recipe.objects.update_or_create(
+                    blizzard_id=spell.id,
+                    defaults={
+                        "blizzard_id": spell.id,
+                        "name": spell.name,
+                        "description": spell.description,
+                        "cooldown": spell.cooldown,
+                        "skillline": spell.skillline,
+                        "qtymade": spell.qtymade,
+                        "crafteditem": crafted_item,
+                        "expansion": spell.expansion,
+                    }
+                )
+                new_spell.save()
+        else:
+            self.stdout.write("Number of spells: {}".format(spells.count()))
 
     def get_auctionhouse_checks(self, dry_run=True):
         house_checks = Tblhousecheck.objects.all()

@@ -85,7 +85,6 @@ class AuctionData(models.Model):
                 added = 0
                 skipped = Counter()
                 auctions = []
-
                 collection_start = time.clock()
                 for row in json_file['auctions']:
                     added += 1

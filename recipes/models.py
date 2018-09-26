@@ -3,6 +3,11 @@ from django.db import models
 
 # Create your models here.
 class Recipe(models.Model):
+    blizzard_id = models.IntegerField(
+        null=True,
+        default=None
+    )
+
     name = models.CharField(
         max_length=128
     )
@@ -55,8 +60,9 @@ class Recipe(models.Model):
     class Meta:
         ordering = ['id']
 
-    def save(self, *args, **kwargs):
-        ingredient = Ingredient.objects.create(item=self.crafteditem, spell=self)
+    # def save(self, *args, **kwargs):
+    #     ingredient = Ingredient.objects.create(item=self.crafteditem, spell=self)
+    #     return super(Recipe, self).save(*args, **kwargs)
 
 
 class Ingredient(models.Model):
@@ -79,13 +85,14 @@ class Ingredient(models.Model):
 
     spell = models.ForeignKey(
         'Recipe',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True
     )
 
     def __str__(self):
         return self.reagent.name
 
     class Meta:
-        managed = False
         ordering = ['spell']
         unique_together = [('reagent', 'spell')]
