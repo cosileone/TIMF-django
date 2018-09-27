@@ -70,8 +70,8 @@ class Ingredient(models.Model):
         'items.Item',
         on_delete=models.PROTECT,
         db_column='item',
-        related_name='reagent_for',
-        verbose_name='Item Made'
+        related_name='reagents',
+        verbose_name='Item Crafted'
     )
 
     skillline = models.PositiveSmallIntegerField()
@@ -87,11 +87,12 @@ class Ingredient(models.Model):
         'Recipe',
         on_delete=models.PROTECT,
         blank=True,
-        null=True
+        null=True,
+        related_name="ingredients"
     )
 
     def __str__(self):
-        return self.reagent.name
+        return "{:.2g} x {}".format(self.quantity, self.reagent.name)
 
     class Meta:
         ordering = ['spell']
