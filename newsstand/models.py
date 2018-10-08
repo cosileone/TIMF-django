@@ -58,17 +58,14 @@ class Tbldbcenchants(models.Model):
 
 class Tbldbcitem(models.Model):
     id = models.PositiveIntegerField(primary_key=True)
-    name = models.CharField(
-        max_length=250,
-        db_column='name_enus',
-        default=''
-    )
+    name_enus = models.CharField(max_length=250)
     name_dede = models.CharField(max_length=250, blank=True, null=True)
     name_eses = models.CharField(max_length=250, blank=True, null=True)
     name_frfr = models.CharField(max_length=250, blank=True, null=True)
     name_itit = models.CharField(max_length=250, blank=True, null=True)
     name_ptbr = models.CharField(max_length=250, blank=True, null=True)
     name_ruru = models.CharField(max_length=250, blank=True, null=True)
+    name_kokr = models.CharField(max_length=250, blank=True, null=True)
     quality = models.PositiveIntegerField()
     level = models.PositiveSmallIntegerField(blank=True, null=True)
     class_field = models.PositiveIntegerField(db_column='class')  # Field renamed because it was a Python reserved word.
@@ -82,7 +79,9 @@ class Tbldbcitem(models.Model):
     type = models.PositiveIntegerField(blank=True, null=True)
     requiredlevel = models.PositiveIntegerField(blank=True, null=True)
     requiredskill = models.PositiveSmallIntegerField(blank=True, null=True)
+    requiredside = models.CharField(max_length=8)
     display = models.PositiveIntegerField(blank=True, null=True)
+    othersideitem = models.PositiveIntegerField(blank=True, null=True)
     flags = models.CharField(max_length=22)
 
     class Meta:
@@ -96,6 +95,7 @@ class Tbldbcitembonus(models.Model):
     level = models.SmallIntegerField(blank=True, null=True)
     previewlevel = models.PositiveSmallIntegerField(blank=True, null=True)
     levelcurve = models.PositiveSmallIntegerField(blank=True, null=True)
+    requiredlevel = models.PositiveIntegerField(blank=True, null=True)
     tagid = models.PositiveIntegerField(blank=True, null=True)
     tagpriority = models.PositiveIntegerField(blank=True, null=True)
     nameid = models.PositiveIntegerField(blank=True, null=True)
@@ -117,6 +117,7 @@ class Tbldbcitemnamedescription(models.Model):
     desc_itit = models.CharField(max_length=120, blank=True, null=True)
     desc_ptbr = models.CharField(max_length=120, blank=True, null=True)
     desc_ruru = models.CharField(max_length=120, blank=True, null=True)
+    desc_kokr = models.CharField(max_length=250, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -136,6 +137,7 @@ class Tbldbcitemrandomsuffix(models.Model):
 class Tbldbcitemreagents(models.Model):
     item = models.PositiveIntegerField()
     skillline = models.PositiveSmallIntegerField()
+    subline = models.PositiveSmallIntegerField()
     reagent = models.PositiveIntegerField()
     quantity = models.DecimalField(max_digits=8, decimal_places=4)
     spell = models.IntegerField(blank=True, null=True)
@@ -165,6 +167,7 @@ class Tbldbcitemsubclass(models.Model):
     name_itit = models.CharField(max_length=250, blank=True, null=True)
     name_ptbr = models.CharField(max_length=250, blank=True, null=True)
     name_ruru = models.CharField(max_length=250, blank=True, null=True)
+    name_kokr = models.CharField(max_length=250, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -192,6 +195,7 @@ class Tbldbcpet(models.Model):
     name_itit = models.CharField(max_length=250, blank=True, null=True)
     name_ptbr = models.CharField(max_length=250, blank=True, null=True)
     name_ruru = models.CharField(max_length=250, blank=True, null=True)
+    name_kokr = models.CharField(max_length=250, blank=True, null=True)
     type = models.PositiveIntegerField()
     icon = models.CharField(max_length=120)
     npc = models.PositiveIntegerField(blank=True, null=True)
@@ -215,6 +219,7 @@ class Tbldbcrandenchants(models.Model):
     name_itit = models.CharField(max_length=64, blank=True, null=True)
     name_ptbr = models.CharField(max_length=64, blank=True, null=True)
     name_ruru = models.CharField(max_length=64, blank=True, null=True)
+    name_kokr = models.CharField(max_length=250, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -237,12 +242,34 @@ class Tbldbcspell(models.Model):
     cooldown = models.PositiveIntegerField()
     skillline = models.PositiveSmallIntegerField(blank=True, null=True)
     qtymade = models.DecimalField(max_digits=7, decimal_places=2)
-    crafteditem = models.PositiveIntegerField(blank=True, null=True)
+    tradeskillcategory = models.PositiveSmallIntegerField(blank=True, null=True)
     expansion = models.PositiveIntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'tblDBCSpell'
+
+
+class Tbldbcspellcrafts(models.Model):
+    spell = models.PositiveIntegerField(primary_key=True)
+    item = models.PositiveIntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'tblDBCSpellCrafts'
+        unique_together = (('spell', 'item'),)
+
+
+class Tbldbctradeskillcategory(models.Model):
+    id = models.PositiveSmallIntegerField(primary_key=True)
+    name = models.CharField(max_length=120)
+    parent = models.PositiveSmallIntegerField()
+    skillline = models.PositiveSmallIntegerField()
+    order = models.PositiveSmallIntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'tblDBCTradeSkillCategory'
 
 
 class Tblhousecheck(models.Model):

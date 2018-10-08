@@ -37,8 +37,8 @@ class Recipe(models.Model):
         'items.Item',
         related_name='crafting_recipe',
         verbose_name='Crafted Item',
-        db_column='crafteditem',
         on_delete=models.PROTECT,
+        null=True,
     )
 
     reagents = models.ManyToManyField(

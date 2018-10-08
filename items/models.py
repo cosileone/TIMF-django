@@ -63,6 +63,8 @@ class Item(models.Model):
         default=None
     )
 
+    # objects = ItemQuerySet.as_manager()
+
     def __str__(self):
         return self.name
 

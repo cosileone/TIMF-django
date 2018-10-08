@@ -91,11 +91,12 @@ class AuctionData(models.Model):
                     try:
                         item = Item.objects.get(blizzard_id=row['item'])
                     except Item.DoesNotExist:
-                        print('{} not found'.format(row['item']))
+                        print('Item {} not found'.format(row['item']))
                         skipped[row['item']] += 1
                         continue
 
-                    auctions.append(self._import_auction(row, item, region))
+                    if not Auction.objects.filter(auc=row['auc']).exists():
+                        auctions.append(self._import_auction(row, item, region))
 
                 print("Collection finished in {} seconds".format(time.clock() - collection_start))
 

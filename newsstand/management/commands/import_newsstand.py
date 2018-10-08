@@ -4,7 +4,7 @@ import time
 from django.core.management.base import BaseCommand
 from django.db import connections
 
-from newsstand.models import Tbldbcitem, Tblrealm, Tblhousecheck, Tbldbcspell, Tbldbcitemreagents
+from newsstand.models import Tbldbcitem, Tblrealm, Tblhousecheck, Tbldbcspell, Tbldbcitemreagents, Tbldbcspellcrafts
 from auctionhouses.models import AuctionData
 from items.models import Item
 from realms.models import Realm
@@ -138,12 +138,6 @@ class Command(BaseCommand):
 
         if not dry_run:
             for spell in spells:
-                try:
-                    crafted_item = Item.objects.get(blizzard_id=spell.crafteditem)
-                except Item.DoesNotExist:
-                    self.stdout.write('Item {} not found'.format(spell.crafteditem))
-                    continue
-
                 new_spell, created = Recipe.objects.update_or_create(
                     blizzard_id=spell.id,
                     defaults={
@@ -153,10 +147,20 @@ class Command(BaseCommand):
                         "cooldown": spell.cooldown,
                         "skillline": spell.skillline,
                         "qtymade": spell.qtymade,
-                        "crafteditem": crafted_item,
                         "expansion": spell.expansion,
                     }
                 )
+                try:
+                    crafted_id = Tbldbcspellcrafts.objects.get(spell=spell.pk)
+                    crafted_item = Item.objects.get(blizzard_id=crafted_id.item)
+                    new_spell.crafteditem = crafted_item
+                except Tbldbcspellcrafts.DoesNotExist:
+                    self.stdout.write('Crafted Item with spell {} not found'.format(spell.pk))
+                    continue
+                except Item.DoesNotExist:
+                    self.stdout.write('Item {} not found'.format(crafted_id.item))
+                    continue
+
                 new_spell.save()
         else:
             self.stdout.write("Number of spells: {}".format(spells.count()))
@@ -207,7 +211,7 @@ class Command(BaseCommand):
         if not dry_run:
             start = time.clock()
             house = 0
-            for row in house_checks[101:102]:
+            for row in house_checks[94:95]:
                 house = row.house
                 new_data, created = AuctionData.objects.update_or_create(house=row.house, defaults={
                     'house': row.house,
