@@ -1,8 +1,7 @@
-from django.db.models import QuerySet, Q, F, Avg, Min, Max, Sum
-from django.db.models.fields import FloatField
+from django.db.models import QuerySet, Q, F, Avg, Min, Max, Sum, FloatField
 
 from realms.models import Realm
-from auctionhouses.utils import median_value
+from .utils import median_value
 
 
 class AuctionQuerySet(QuerySet):

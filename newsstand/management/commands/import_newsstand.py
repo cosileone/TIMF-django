@@ -4,7 +4,7 @@ import time
 from django.core.management.base import BaseCommand
 from django.db import connections
 
-from newsstand.models import Tbldbcitem, Tblrealm, Tblhousecheck, Tbldbcspell, Tbldbcitemreagents, Tbldbcspellcrafts
+from newsstand.models import Tbldbcitem, Tblrealm, Tblhousecheck, Tbldbcspell, Tbldbcspellcrafts
 from auctionhouses.models import AuctionData
 from items.models import Item
 from realms.models import Realm
