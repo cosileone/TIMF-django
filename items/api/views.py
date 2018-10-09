@@ -3,6 +3,8 @@ from rest_framework import viewsets, filters
 from items.api.serializers import SimpleItemSerializer, ItemSerializer
 from ..models import Item
 
+from realms.models import Realm
+
 
 class ItemViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -14,14 +16,19 @@ class ItemViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ('name',)
 
     def get_serializer_context(self):
-        return {'realm': self.request.query_params.get('realm', None)}
+        context = super(ItemViewSet, self).get_serializer_context()
+        region = self.request.query_params.get('region', 'US')
+        realm_slug = self.request.query_params.get('realm', None)
+        if realm_slug:
+            context['realm'] = Realm.objects.get(slug=realm_slug, region=region)
+        return context
 
     def get_serializer(self, *args, **kwargs):
         """
         Switch serializer based on whether a realm is specified
         """
         kwargs['context'] = self.get_serializer_context()
-        realm = kwargs['context']['realm']
+        realm = kwargs['context'].get('realm', None)
         if realm is not None:
             serializer_class = ItemSerializer
         else:
