@@ -131,6 +131,7 @@ class AuctionHouse(object):
 
         return results
 
+
 def median_value(queryset, term):
     count = queryset.count()
     values = queryset.values_list(term, flat=True).order_by(term)
