@@ -63,6 +63,7 @@ class AuctionData(models.Model):
     lastchecksuccessresult = models.TextField(blank=True, null=True)
 
     file_url = models.URLField(null=True, blank=True)
+    # file = models.FileField()
 
     @transaction.atomic
     def build_auctions(self, region):
@@ -98,11 +99,19 @@ class AuctionData(models.Model):
                     if not Auction.objects.filter(auc=row['auc']).exists():
                         auctions.append(self._import_auction(row, item, region))
 
+                    if len(auctions) == 500:
+                        bulk_insertion_start = time.clock()
+                        # SQLite default max insertion is 500
+                        # https://stackoverflow.com/questions/9527851/sqlite-error-too-many-terms-in-compound-select
+                        Auction.objects.bulk_create(auctions, batch_size=500)
+                        print("500 inserts finished in {} seconds".format(time.clock() - bulk_insertion_start))
+                        auctions = []
+
                 print("Collection finished in {} seconds".format(time.clock() - collection_start))
 
                 bulk_insertion_start = time.clock()
-                Auction.objects.bulk_create(auctions, batch_size=500)  # SQLite max insertion is 999?
-                print("Insertion finished in {} seconds".format(time.clock() - bulk_insertion_start))
+                Auction.objects.bulk_create(auctions)
+                print("Remainder of inserts finished in {} seconds".format(time.clock() - bulk_insertion_start))
 
                 for item_id, skips in skipped.items():
                     print('ID {} skipped {} times'.format(item_id, skips))
