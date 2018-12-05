@@ -15,6 +15,12 @@ class AuctionQuerySet(QuerySet):
     def non_zero_buyouts(self):
         return self.filter(Q(buyout__gt=0))
 
+    def buyout_median(self):
+        return median_value(self.non_zero_buyouts(), 'buyout')
+
+    def bid_median(self):
+        return median_value(self, 'bid')
+
     def bid_stats(self):
         bid_min = Min(F('bid')/F('quantity'), output_field=FloatField())
         bid_max = Max(F('bid')/F('quantity'), output_field=FloatField())
@@ -22,13 +28,16 @@ class AuctionQuerySet(QuerySet):
 
         total_available_units = Sum('quantity')
         total_market_cap = Sum('bid')
-        return self.non_zero_buyouts().aggregate(
+
+        auctions = self.non_zero_buyouts().annotate(
             bid_min=bid_min,
             bid_max=bid_max,
             bid_avg=bid_avg,
             total_units=total_available_units,
             market_cap=total_market_cap
         )
+
+        return auctions
 
     def buyout_stats(self):
         buyout_min = Min(F('buyout')/F('quantity'), output_field=FloatField())
@@ -37,7 +46,8 @@ class AuctionQuerySet(QuerySet):
 
         total_available_units = Sum('quantity')
         total_market_cap = Sum('buyout')
-        return self.non_zero_buyouts().aggregate(
+
+        auctions = self.non_zero_buyouts().annotate(
             buyout_min=buyout_min,
             buyout_max=buyout_max,
             buyout_avg=buyout_avg,
@@ -45,9 +55,6 @@ class AuctionQuerySet(QuerySet):
             market_cap=total_market_cap
         )
 
-    def buyout_median(self):
-        return median_value(self.non_zero_buyouts(), 'buyout')
+        return auctions
 
-    def bid_median(self):
-        return median_value(self, 'bid')
 

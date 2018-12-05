@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum, Min, Q, F, IntegerField
 
 
 # Create your models here.
@@ -59,6 +60,15 @@ class Recipe(models.Model):
 
     class Meta:
         ordering = ['id']
+
+    def market_price_buyout(self, realm=None):
+        from auctionhouses.models import Auction
+
+        auctions = Auction.objects.filter(item__in=self.reagents.all())
+
+        return auctions.available_to(realm=realm).buyout_stats().aggregate(
+            market_cost_buyout=Sum(F('buyout_min')*F('quantity'), output_field=IntegerField())
+        )
 
     # def save(self, *args, **kwargs):
     #     ingredient = Ingredient.objects.create(item=self.crafteditem, spell=self)

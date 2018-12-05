@@ -211,7 +211,7 @@ class Command(BaseCommand):
         if not dry_run:
             start = time.clock()
             house = 0
-            for row in house_checks[94:95]:
+            for row in house_checks[97:98]:
                 house = row.house
                 new_data, created = AuctionData.objects.update_or_create(house=row.house, defaults={
                     'house': row.house,

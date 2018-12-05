@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Test Area{% endblock title %}
+
+{% block body %}
+    <div>
+        <p>{{ recipe }} {{ recipe.ingredients.all }} {{ price }}</p>
+    </div>
+{% endblock body %}
+
+{% block javascript %}
+{% endblock javascript %}
