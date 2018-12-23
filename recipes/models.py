@@ -66,7 +66,10 @@ class Recipe(models.Model):
 
         auctions = Auction.objects.filter(item__in=self.reagents.all())
 
-        return auctions.available_to(realm=realm).buyout_stats().aggregate(
+        if realm:
+            auctions = auctions.available_to(realm)
+
+        return auctions.buyout_stats().aggregate(
             market_cost_buyout=Sum(F('buyout_min')*F('quantity'), output_field=IntegerField())
         )
 

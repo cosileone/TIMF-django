@@ -18,6 +18,4 @@ class ItemSerializer(serializers.ModelSerializer):
 
     def get_market_data(self, obj):
         realm = self.context.get('realm')
-        return obj.auctions.available_to(realm).buyout_stats().aggregate(
-            market_cost_buyout=Sum(F('buyout_min')*F('quantity'), output_field=IntegerField())
-        )
+        return obj.auctions.available_to(realm).buyout_stats()
