@@ -47,7 +47,7 @@ class AuctionQuerySet(QuerySet):
         total_available_units = Sum('quantity')
         total_market_cap = Sum('buyout')
 
-        auctions = self.non_zero_buyouts().aggregate(
+        auctions = self.non_zero_buyouts().annotate(
             buyout_min=buyout_min,
             buyout_max=buyout_max,
             buyout_avg=buyout_avg,
