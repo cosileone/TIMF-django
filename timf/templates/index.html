@@ -74,12 +74,12 @@
                                 </div>
                             </td>
                             <td>
-                                <div v-if="item.auction_data" style="display: inline-block;">
-                                    <span v-if="item.auction_data.cheapest_buyout">
-                                        {{ item.auction_data.cheapest_buyout }}g
+                                <div v-if="item.market_data" style="display: inline-block;">
+                                    <span v-if="item.market_data.buyout_min">
+                                        {{ item.market_data.buyout_min/10000 }}g
                                     </span>
                                     <span v-else>
-                                        {{ item.auction_data.cheapest_bid }}g
+                                        {{ item.auction_data.bid_min }}g
                                     </span>
                                 </div>
                             </td>
@@ -165,7 +165,7 @@
                 return null;
             },
             submitSearch: function () {
-                let url = '/api/items';
+                let url = '/api/items/';
                 let vm = this;
 
                 if (this.searchQuery) {
@@ -208,7 +208,7 @@
                         url: url,
                         type: 'get'
                     }).done(function (response) {
-                        Vue.set(item, 'auction_data', response.auction_data);
+                        Vue.set(item, 'market_data', response.market_data);
                     }).fail(function (xhr, status, message) {
                         console.log(message);
                     }).always(function () {
