@@ -4,7 +4,7 @@
 
 {% block body %}
     <div>
-        <p>{{ recipe }} {{ recipe.ingredients.all }} {{ price }}</p>
+        <p>{{ recipe }} {{ recipe.ingredients.all }} {{ average }} {{ min_buyout|floatformat:'2' }}</p>
     </div>
 {% endblock body %}
 

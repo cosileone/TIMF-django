@@ -14,6 +14,8 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
 
 
 # Quick-start development settings - unsuitable for production
@@ -26,7 +28,7 @@ SECRET_KEY = 'c$o5p_fca&@l(xb@bp(4&iwhyy78d6+4-39p46hma%nscrhbp-'
 DEBUG = False
 DJANGO_TOOLBAR = False
 
-ALLOWED_HOSTS = ['timf.cosileone.com', '127.0.0.1']
+ALLOWED_HOSTS = ['timf.cosileone.com', '127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'rest_framework',
+    'webpack_loader',
     'timf',
     'items',
     'realms',
@@ -70,7 +73,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'timf/templates'
+            'timf/templates',
+            TEMPLATES_DIR
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -163,6 +167,14 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+}
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG,
+        'BUNDLE_DIR_NAME': '/bundles/',  # must end with slash
+        'STATS_FILE': os.path.join(FRONTEND_DIR, 'webpack-stats.json'),
+    }
 }
 
 # import environment specific settings.

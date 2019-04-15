@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Sum, Min, Q, F, IntegerField
+from django.db.models import Sum, Min, Q, F, IntegerField, Avg, FloatField
 
 
 # Create your models here.
@@ -61,7 +61,7 @@ class Recipe(models.Model):
     class Meta:
         ordering = ['id']
 
-    def market_price_buyout(self, realm=None):
+    def market_avg_buyout(self, realm=None):
         from auctionhouses.models import Auction
 
         auctions = Auction.objects.filter(item__in=self.reagents.all())
@@ -70,8 +70,36 @@ class Recipe(models.Model):
             auctions = auctions.available_to(realm)
 
         return auctions.buyout_stats().aggregate(
-            market_cost_buyout=Sum(F('buyout_min')*F('quantity'), output_field=IntegerField())
+            market_avg_buyout=Avg(
+                F('buyout_min')*F('quantity'),
+                output_field=IntegerField()
+            )
         )
+
+    def market_min_buyout(self, realm=None):
+        from auctionhouses.models import Auction
+
+        auctions = Auction.objects.filter(item__in=self.reagents.all())
+
+        if realm:
+            auctions = auctions.available_to(realm)
+
+        return auctions.buyout_stats().aggregate(
+            market_min_buyout=Min(
+                F('buyout_min')/F('quantity'),
+                output_field=IntegerField()
+            )
+        )
+
+    def market_stats(self, realm=None):
+        from auctionhouses.models import Auction
+
+        auctions = Auction.objects.filter(item__in=self.reagents.all())
+
+        if realm:
+            auctions = auctions.available_to(realm)
+
+        return auctions.buyout_stats()
 
     # def save(self, *args, **kwargs):
     #     ingredient = Ingredient.objects.create(item=self.crafteditem, spell=self)
