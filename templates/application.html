@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="favicon.ico">
     <title>Home | Time is Money, Friend</title>
+    {% render_bundle 'app' 'css' %}
 </head>
 <body>
 <noscript>
@@ -18,8 +19,8 @@
     <app></app>
 </div>
 
-{% render_bundle 'app' %}
 <!-- built files will be auto injected -->
+{% render_bundle 'app' 'js' %}
 
 </body>
 </html>

@@ -153,3 +153,4 @@ ENV/
 .idea/
 db.sqlite3
 frontend/webpack-stats.json
+static/*

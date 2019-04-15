@@ -1,11 +1,14 @@
+const path = require('path');
 const BundleTracker = require("webpack-bundle-tracker");
 
 const VueConfig = {
   css: {
     sourceMap: true
   },
-  publicPath: 'http://127.0.0.1:8080/',
-  outputDir: './dist/',
+  publicPath: process.env.NODE_ENV === 'production'
+    ? '/'
+    : 'http://127.0.0.1:8080',
+  outputDir: path.resolve(__dirname, '../static/'),
 
   chainWebpack: (config) => {
     config.optimization
@@ -25,7 +28,7 @@ const VueConfig = {
     .hotOnly(true)
     .watchOptions({poll: 1000})
     .https(false)
-    .headers({"Access-Control-Allow-Origin": ["*"]});
+    .headers({"Access-Control-Allow-Origin": ["\*"]});
   }
 };
 
