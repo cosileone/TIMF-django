@@ -11,24 +11,21 @@
     </div>
     <div id="nav">
       <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="about">About</router-link>
     </div>
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
   </div>
 </template>
 
 <script>
-  import HelloWorld from './components/HelloWorld.vue'
-
   export default {
     name: 'app',
-    components: {
-      HelloWorld
-    }
+    components: {}
   }
 </script>
 
 <style lang="scss">
+  @import '~element-ui/lib/theme-chalk/index.css';
+
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
