@@ -31,8 +31,10 @@ urlpatterns = [
     path('', include('timf.api.urls')),
     path('api-auth/', include('rest_framework.urls')),
 
-    # SPA catch-all
+    # vue
     path('', TemplateView.as_view(template_name='application.html'), name='app'),
+
+    # SPA catch-all
     re_path('^(?P<url>.*)$', TemplateView.as_view(template_name='application.html'), name='app'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

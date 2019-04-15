@@ -28,7 +28,7 @@ SECRET_KEY = 'c$o5p_fca&@l(xb@bp(4&iwhyy78d6+4-39p46hma%nscrhbp-'
 DEBUG = False
 DJANGO_TOOLBAR = False
 
-ALLOWED_HOSTS = ['timf.cosileone.com', '127.0.0.1']
+ALLOWED_HOSTS = ['timf.cosileone.com', '127.0.0.1', 'localhost']
 
 # Application definition
 
