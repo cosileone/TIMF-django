@@ -32,10 +32,11 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
 
     # vue
-    path('', TemplateView.as_view(template_name='application.html'), name='app'),
+    path('', views.vue),
 
     # SPA catch-all
-    re_path('^(?P<url>.*)$', TemplateView.as_view(template_name='application.html'), name='app'),
+    # re_path('.*', views.vue, name='catchall'),
+    # re_path('.*[^.]+$', views.vue, name='catchall'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG and settings.DJANGO_TOOLBAR:

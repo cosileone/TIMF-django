@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.db.models import Min
+from django.conf import settings
 
 from realms.models import Realm
 
@@ -9,6 +9,24 @@ def index(request):
     Homepage
     """
     return render(request, "index.html")
+
+
+def vue(request):
+    """
+    Vue App
+    :param request:
+    :return:
+    """
+    # template = 'application.html' if settings.DEBUG else 'vue.html'
+    template = 'vue.html'
+    print(template)
+    context = {}
+
+    return render(
+        request,
+        template,
+        context
+    )
 
 
 def test(request):

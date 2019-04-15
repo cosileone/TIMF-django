@@ -6,9 +6,11 @@ const VueConfig = {
     sourceMap: true
   },
   publicPath: process.env.NODE_ENV === 'production'
-    ? '/'
+    ? 'static/'
     : 'http://127.0.0.1:8080',
   outputDir: path.resolve(__dirname, '../static/'),
+  indexPath: '../templates/vue.html',
+  // indexPath: '../templates/application.html',
 
   chainWebpack: (config) => {
     config.optimization
@@ -16,7 +18,7 @@ const VueConfig = {
 
     config
     .plugin('BundleTracker')
-    .use(BundleTracker, [{filename: '../frontend/webpack-stats.json'}]);
+    .use(BundleTracker, [{filename: './webpack-stats.json'}]);
 
     config.resolve.alias
     .set('__STATIC__', 'static');
