@@ -6,11 +6,11 @@ const VueConfig = {
     sourceMap: true
   },
   publicPath: process.env.NODE_ENV === 'production'
-    ? 'static/'
+    ? '/static/'
     : 'http://127.0.0.1:8080',
   outputDir: path.resolve(__dirname, '../static/'),
-  indexPath: '../templates/vue.html',
-  // indexPath: '../templates/application.html',
+  indexPath: process.env.NODE_ENV === 'production' ?
+    '../templates/vue.html' : '../templates/application.html',
 
   chainWebpack: (config) => {
     config.optimization

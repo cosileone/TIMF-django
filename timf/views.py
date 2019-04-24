@@ -17,9 +17,7 @@ def vue(request):
     :param request:
     :return:
     """
-    # template = 'application.html' if settings.DEBUG else 'vue.html'
-    template = 'vue.html'
-    print(template)
+    template = 'application.html' if settings.DEBUG else 'vue.html'
     context = {}
 
     return render(
