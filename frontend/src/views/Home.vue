@@ -1,22 +1,12 @@
 <template>
   <div class="home">
-    <img :src="require('@/assets/logo.png')">
-    <div>
-      <p>
-        If Element is successfully added to this project, you'll see an
-        <code v-text="'<el-button>'"></code>
-        below
-      </p>
-      <el-button>el-button</el-button>
-    </div>
+    Time is Money, Friend
   </div>
 </template>
 
-<script lang="ts">
-  import Vue from 'vue';
-
-  export default Vue.extend({
+<script>
+  export default {
     name: 'home',
     components: {},
-  });
+  };
 </script>

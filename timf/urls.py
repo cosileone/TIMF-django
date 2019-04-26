@@ -35,7 +35,7 @@ urlpatterns = [
     path('', views.vue),
 
     # SPA catch-all
-    # re_path('.*', views.vue, name='catchall'),
+    re_path('.*', views.vue, name='catchall'),
     # re_path('.*[^.]+$', views.vue, name='catchall'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
