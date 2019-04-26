@@ -17,25 +17,6 @@
                 <el-button>Sign Up</el-button>
             </router-link>
         </el-menu-item>
-        <!--<div class="navigation__links">-->
-            <!--<ul>-->
-                <!--<li>-->
-                    <!--<router-link to="/">-->
-                        <!--<el-button type="text">Home</el-button>-->
-                    <!--</router-link>-->
-                <!--</li>-->
-                <!--<li>-->
-                    <!--<router-link to="">-->
-                        <!--<el-button type="text">Login</el-button>-->
-                    <!--</router-link>-->
-                <!--</li>-->
-                <!--<li>-->
-                    <!--<router-link to="/register">-->
-                        <!--<el-button type="primary" plain>Sign Up</el-button>-->
-                    <!--</router-link>-->
-                <!--</li>-->
-            <!--</ul>-->
-        <!--</div>-->
     </el-menu>
 </template>
 
