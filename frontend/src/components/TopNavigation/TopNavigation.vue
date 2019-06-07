@@ -31,7 +31,7 @@
         padding: 8px;
 
         &__logo {
-            height: 60px;
+            height: 40px;
         }
 
         &__link {
