@@ -3,7 +3,7 @@ bpython==0.18
 certifi==2019.3.9
 chardet==3.0.4
 curtsies==0.3.0
-Django==2.2
+Django==2.2.10
 django-debug-toolbar==1.11
 django-extensions==2.1.6
 django-filter==2.1.0
